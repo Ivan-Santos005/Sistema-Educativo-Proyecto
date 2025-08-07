@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal del Estudiante</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f5dc 0%, #e8e8d8 100%);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: #6B8E6B;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 24px;
+    }
+
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logout-btn, .back-btn {
+      background: #5a7a5a;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .back-btn {
+      background: #8FBC8F;
+      display: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+
+    /* Vista de Materias */
+    .materias-view {
+      display: block;
+    }
+
+    .welcome-section {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .welcome-section h2 {
+      color: #6B8E6B;
+      font-size: 28px;
+      margin-bottom: 15px;
+    }
+
+    .welcome-section p {
+      color: #666;
+      font-size: 16px;
+    }
+
+    .student-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: left;
+    }
+
+    .info-item strong {
+      color: #6B8E6B;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .materias-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 25px;
+    }
+
+    .materia-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-left: 5px solid #6B8E6B;
+    }
+
+    .materia-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .materia-card h3 {
+      color: #6B8E6B;
+      font-size: 22px;
+      margin-bottom: 15px;
+    }
+
+    .materia-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .materia-info p {
+      color: #666;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .materia-info strong {
+      color: #333;
+      min-width: 80px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+      background: #6B8E6B;
+      color: white;
+    }
+
+    /* Vista de Calificaciones */
+    .calificaciones-view {
+      display: none;
+    }
+
+    .view-header {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .view-header h2 {
+      color: #6B8E6B;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .breadcrumb {
+      color: #666;
+      font-size: 16px;
+    }
+
+    .breadcrumb span {
+      color: #6B8E6B;
+      font-weight: bold;
+    }
+
+    /* Información del estudiante */
+    .materia-details {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-item label {
+      font-weight: bold;
+      color: #8B7355;
+      background: #E8DCC6;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .detail-item span {
+      background: #f8f9fa;
+      padding: 10px 15px;
+      border-radius: 8px;
+      color: #333;
+    }
+
+    /* Secciones de evaluación */
+    .evaluation-sections {
+      display: grid;
+      gap: 25px;
+    }
+
+    .evaluation-section {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .section-title {
+      color: #6B8E6B;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .section-description {
+      color: #666;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    /* Tabla de calificaciones */
+    .grades-table-container {
+      background: #6B8E6B;
+      border-radius: 15px;
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    .grades-table {
+      width: 100%;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      border-collapse: collapse;
+    }
+
+    .grades-table th,
+    .grades-table td {
+      padding: 15px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    .grades-table th {
+      background: #f8f9fa;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .grades-table .unit-header {
+      background: #8FBC8F;
+      color: white;
+      font-weight: bold;
+    }
+
+    .grade-cell {
+      background: #f8f9fa;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .total-cell {
+      background: #E8DCC6 !important;
+      font-weight: bold;
+      font-size: 16px;
+      color: #333;
+    }
+
+    /* Resumen de calificaciones */
+    .summary-section {
+      background: linear-gradient(135deg, #6B8E6B, #8FBC8F);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .summary-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 20px;
+    }
+
+    .summary-item {
+      background: rgba(255,255,255,0.2);
+      padding: 20px;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+    }
+
+    .summary-item .label {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+
+    .summary-item .value {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      background: white;
+      border-radius: 15px;
+      margin: 20px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 10px;
+      }
+      
+      .materias-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .grades-table-container {
+        overflow-x: scroll;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎓 Portal del Estudiante</h1>
+    <div class="header-info">
+      <button class="back-btn" id="backBtn" onclick="goBack()">← Regresar</button>
+      <span id="studentName">Cargando...</span>
+      <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Vista de Materias -->
+    <div class="materias-view" id="materiasView">
+      <div class="welcome-section">
+        <h2>¡Bienvenido a tu Portal Académico!</h2>
+        <p>Consulta tus materias, calificaciones y progreso académico</p>
+        
+        <div class="student-info">
+          <div class="info-item">
+            <strong>Estudiante:</strong>
+            <span id="studentNameInfo">-</span>
+          </div>
+          <div class="info-item">
+            <strong>No. Control:</strong>
+            <span id="studentControlInfo">-</span>
+          </div>
+          <div class="info-item">
+            <strong>Materias Inscritas:</strong>
+            <span id="totalMaterias">-</span>
+          </div>
+          <div class="info-item">
+            <strong>Periodo:</strong>
+            <span>2025-1</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="materias-grid" id="materiasGrid">
+        <div class="loading">Cargando tus materias...</div>
+      </div>
+    </div>
+
+    <!-- Vista de Calificaciones -->
+    <div class="calificaciones-view" id="calificacionesView">
+      <div class="view-header">
+        <h2 id="currentMateria">MATERIA</h2>
+        <div class="breadcrumb">
+          Mis Materias > <span id="currentMateriaName"></span>
+        </div>
+      </div>
+
+      <div class="materia-details">
+        <div class="details-grid">
+          <div class="detail-item">
+            <label>ESTUDIANTE:</label>
+            <span id="studentNameField">-</span>
+          </div>
+          <div class="detail-item">
+            <label>NO. CONTROL:</label>
+            <span id="studentControlField">-</span>
+          </div>
+          <div class="detail-item">
+            <label>MATERIA:</label>
+            <span id="materiaNameField">-</span>
+          </div>
+          <div class="detail-item">
+            <label>GRUPO:</label>
+            <span id="grupoField">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección SER (Asistencia) -->
+      <div class="evaluation-section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">SER - Asistencia</div>
+            <div class="section-description">Evaluación de asistencia y participación</div>
+          </div>
+        </div>
+        <div class="grades-table-container">
+          <table class="grades-table" id="asistenciaTable">
+            <tbody>
+              <tr><td colspan="100%" class="loading">Cargando calificaciones...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sección SABER SER (Actitudes) -->
+      <div class="evaluation-section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">SABER SER - Actitudes</div>
+            <div class="section-description">Evaluación de responsabilidad y disposición</div>
+          </div>
+        </div>
+        <div class="grades-table-container">
+          <table class="grades-table" id="actitudesTable">
+            <tbody>
+              <tr><td colspan="100%" class="loading">Cargando calificaciones...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sección SABER (Conocimientos) -->
+      <div class="evaluation-section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">SABER - Conocimientos</div>
+            <div class="section-description">Evaluación de conocimientos técnicos</div>
+          </div>
+        </div>
+        <div class="grades-table-container">
+          <table class="grades-table" id="conocimientosTable">
+            <tbody>
+              <tr><td colspan="100%" class="loading">Cargando calificaciones...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Resumen -->
+      <div class="summary-section">
+        <div class="summary-title">📊 Resumen de Calificaciones</div>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="label">SER</div>
+            <div class="value" id="totalSer">0</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">SABER SER</div>
+            <div class="value" id="totalSaberSer">0</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">SABER</div>
+            <div class="value" id="totalSaber">0</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">PROMEDIO</div>
+            <div class="value" id="promedio">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { 
+      collection, 
+      getDocs, 
+      doc, 
+      getDoc,
+      query,
+      where
+    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    let currentUser = null;
+    let currentView = 'materias'; // materias, calificaciones
+    let currentMateriaData = null;
+    let materiasInscritas = [];
+    let studentData = null;
+
+    // Verificar autenticación
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      currentUser = user;
+      await loadStudentInfo();
+      await loadMateriasInscritas();
+    });
+
+    // Cargar información del estudiante
+    async function loadStudentInfo() {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        if (userDoc.exists()) {
+          studentData = userDoc.data();
+          document.getElementById('studentName').textContent = studentData.nombre;
+          document.getElementById('studentNameInfo').textContent = studentData.nombre;
+          document.getElementById('studentNameField').textContent = studentData.nombre;
+          document.getElementById('studentControlInfo').textContent = studentData.numeroControl;
+          document.getElementById('studentControlField').textContent = studentData.numeroControl;
+        }
+      } catch (error) {
+        console.error('Error cargando información del estudiante:', error);
+      }
+    }
+
+    // Cargar materias inscritas
+    async function loadMateriasInscritas() {
+      try {
+        const inscripcionesQuery = query(
+          collection(db, 'inscripciones'), 
+          where('alumnoId', '==', currentUser.uid)
+        );
+        const inscripcionesSnapshot = await getDocs(inscripcionesQuery);
+        
+        materiasInscritas = [];
+        
+        for (const inscripcionDoc of inscripcionesSnapshot.docs) {
+          const inscripcion = inscripcionDoc.data();
+          
+          // Obtener información de la materia
+          const materiaDoc = await getDoc(doc(db, 'materias', inscripcion.materiaId));
+          if (materiaDoc.exists()) {
+            // Obtener información del docente
+            const asignacionesQuery = query(
+              collection(db, 'asignaciones'),
+              where('materiaId', '==', inscripcion.materiaId),
+              where('grupo', '==', inscripcion.grupo)
+            );
+            const asignacionesSnapshot = await getDocs(asignacionesQuery);
+            
+            let docenteNombre = 'No asignado';
+            if (!asignacionesSnapshot.empty) {
+              const asignacion = asignacionesSnapshot.docs[0].data();
+              const docenteDoc = await getDoc(doc(db, 'users', asignacion.docenteId));
+              if (docenteDoc.exists()) {
+                docenteNombre = docenteDoc.data().nombre;
+              }
+            }
+            
+            materiasInscritas.push({
+              ...inscripcion,
+              materiaInfo: { id: materiaDoc.id, ...materiaDoc.data() },
+              materiaId: inscripcion.materiaId,
+              docenteNombre: docenteNombre
+            });
+          }
+        }
+        
+        document.getElementById('totalMaterias').textContent = materiasInscritas.length;
+        renderMateriasList();
+      } catch (error) {
+        console.error('Error cargando materias inscritas:', error);
+        document.getElementById('materiasGrid').innerHTML = `
+          <div class="empty-state">
+            <h3>❌ Error cargando materias</h3>
+            <p>No se pudieron cargar las materias. Verifica tu conexión.</p>
+          </div>
+        `;
+      }
+    }
+
+    // Renderizar lista de materias
+    function renderMateriasList() {
+      const grid = document.getElementById('materiasGrid');
+      
+      if (materiasInscritas.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <h3>📚 Sin materias inscritas</h3>
+            <p>No tienes materias inscritas en este periodo académico.</p>
+            <p>Contacta a tu coordinador académico para más información.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      let html = '';
+      materiasInscritas.forEach((materia, index) => {
+        html += `
+          <div class="materia-card" onclick="showCalificaciones(${index})">
+            <h3>${materia.materiaInfo.nombre}</h3>
+            <div class="materia-info">
+              <p><strong>Código:</strong> ${materia.materiaInfo.codigo}</p>
+              <p><strong>Grupo:</strong> ${materia.grupo}</p>
+              <p><strong>Docente:</strong> ${materia.docenteNombre}</p>
+              <p><strong>Créditos:</strong> ${materia.materiaInfo.creditos || 'N/A'}</p>
+              <p><strong>Unidades:</strong> ${materia.materiaInfo.unidades ? materia.materiaInfo.unidades.length : 0}</p>
+              <p><span class="status-badge">📖 Cursando</span></p>
+            </div>
+          </div>
+        `;
+      });
+      
+      grid.innerHTML = html;
+    }
+
+    // Mostrar calificaciones de una materia
+    window.showCalificaciones = async function(materiaIndex) {
+      currentView = 'calificaciones';
+      currentMateriaData = materiasInscritas[materiaIndex];
+      
+      document.getElementById('materiasView').style.display = 'none';
+      document.getElementById('calificacionesView').style.display = 'block';
+      document.getElementById('backBtn').style.display = 'inline-block';
+      
+      // Llenar información
+      document.getElementById('currentMateria').textContent = currentMateriaData.materiaInfo.nombre;
+      document.getElementById('currentMateriaName').textContent = currentMateriaData.materiaInfo.nombre;
+      document.getElementById('materiaNameField').textContent = currentMateriaData.materiaInfo.nombre;
+      document.getElementById('grupoField').textContent = currentMateriaData.grupo;
+      
+      await loadCalificaciones();
+    };
+
+    // Navegar hacia atrás
+    window.goBack = function() {
+      if (currentView === 'calificaciones') {
+        document.getElementById('calificacionesView').style.display = 'none';
+        document.getElementById('materiasView').style.display = 'block';
+        document.getElementById('backBtn').style.display = 'none';
+        currentView = 'materias';
+      }
+    };
+
+    // Cerrar sesión
+    window.logout = async function() {
+      try {
+        await signOut(auth);
+        window.location.href = 'login.html';
+      } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+      }
+    };
+
+    // Cargar calificaciones del estudiante
+    async function loadCalificaciones() {
+      try {
+        const cursoId = `curso_${currentMateriaData.materiaInfo.codigo}_${currentMateriaData.grupo}`;
+        const calificacionesDoc = await getDoc(doc(db, 'calificaciones', cursoId));
+        
+        let calificacionesData = {};
+        if (calificacionesDoc.exists()) {
+          const cursoData = calificacionesDoc.data();
+          calificacionesData = cursoData.estudiantes?.[currentUser.uid]?.unidades || {};
+        }
+        
+        console.log('Calificaciones cargadas:', calificacionesData);
+        
+        renderCalificacionesTables(calificacionesData);
+        calculateTotals(calificacionesData);
+      } catch (error) {
+        console.error('Error cargando calificaciones:', error);
+        // Mostrar tablas vacías
+        renderCalificacionesTables({});
+        calculateTotals({});
+      }
+    }
+
+    // Renderizar tablas de calificaciones
+    function renderCalificacionesTables(calificaciones) {
+      const unidades = currentMateriaData.materiaInfo.unidades || ['Unidad 1', 'Unidad 2', 'Unidad 3', 'Unidad 4'];
+      
+      // Tabla de Asistencia (SER)
+      renderEvaluationTable('asistenciaTable', unidades, ['asistencia'], calificaciones);
+      
+      // Tabla de Actitudes (SABER SER)
+      renderEvaluationTable('actitudesTable', unidades, ['responsabilidad', 'disposicion'], calificaciones);
+      
+      // Tabla de Conocimientos (SABER)
+      renderEvaluationTable('conocimientosTable', unidades, ['conocimientos'], calificaciones);
+    }
+
+    // Renderizar tabla de evaluación específica
+    function renderEvaluationTable(tableId, unidades, criterios, calificaciones) {
+      const table = document.getElementById(tableId);
+      
+      if (!calificaciones || Object.keys(calificaciones).length === 0) {
+        table.innerHTML = `
+          <tbody>
+            <tr>
+              <td colspan="100%" style="text-align: center; padding: 20px; color: #666;">
+                📋 Aún no hay calificaciones registradas para esta evaluación
+              </td>
+            </tr>
+          </tbody>
+        `;
+        return;
+      }
+      
+      // Encabezados
+      let headerHTML = `
+        <thead>
+          <tr>
+            <th style="min-width: 120px;">Criterio</th>
+      `;
+      
+      unidades.forEach((unidad) => {
+        headerHTML += `<th class="unit-header">${unidad}</th>`;
+      });
+      headerHTML += `<th class="total-cell">TOTAL</th></tr></thead>`;
+      
+      // Cuerpo de la tabla
+      let bodyHTML = '<tbody>';
+      criterios.forEach(criterio => {
+        bodyHTML += `<tr><td style="background: #6B8E6B; color: white; font-weight: bold;">${criterio.charAt(0).toUpperCase() + criterio.slice(1)}</td>`;
+        
+        let totalCriterio = 0;
+        unidades.forEach((unidad, index) => {
+          const unidadKey = `unidad_${index}`;
+          const valor = calificaciones[unidadKey]?.[criterio] || 0;
+          totalCriterio += valor;
+          
+          const cellClass = valor >= 8 ? 'grade-cell' : valor >= 6 ? 'grade-cell' : 'grade-cell';
+          const cellStyle = valor >= 8 ? 'background: #e8f5e8;' : valor >= 6 ? 'background: #fff3cd;' : 'background: #ffebee;';
+          
+          bodyHTML += `<td class="${cellClass}" style="${cellStyle}">${valor}</td>`;
+        });
+        
+        bodyHTML += `<td class="total-cell">${totalCriterio}</td></tr>`;
+      });
+      bodyHTML += '</tbody>';
+      
+      table.innerHTML = headerHTML + bodyHTML;
+    }
+
+    // Calcular totales
+    function calculateTotals(calificaciones) {
+      const unidades = currentMateriaData.materiaInfo.unidades || ['Unidad 1', 'Unidad 2', 'Unidad 3', 'Unidad 4'];
+      
+      let totalSer = 0;
+      let totalSaberSer = 0;
+      let totalSaber = 0;
+      
+      // Calcular totales por tipo de evaluación
+      unidades.forEach((unidad, index) => {
+        const unidadKey = `unidad_${index}`;
+        const unidadData = calificaciones[unidadKey] || {};
+        
+        totalSer += unidadData.asistencia || 0;
+        totalSaberSer += (unidadData.responsabilidad || 0) + (unidadData.disposicion || 0);
+        totalSaber += unidadData.conocimientos || 0;
+      });
+      
+      const totalGeneral = totalSer + totalSaberSer + totalSaber;
+      const promedio = totalGeneral > 0 ? (totalGeneral / (unidades.length * 4)).toFixed(1) : 0;
+      
+      // Actualizar la UI
+      document.getElementById('totalSer').textContent = totalSer;
+      document.getElementById('totalSaberSer').textContent = totalSaberSer;
+      document.getElementById('totalSaber').textContent = totalSaber;
+      document.getElementById('promedio').textContent = promedio;
+    }
+  </script>
+</body>
+</html>

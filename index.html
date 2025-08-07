@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Educativo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #f5f5dc 0%, #e8e8d8 100%);
+    }
+    .loading {
+      text-align: center;
+      color: #6B8E6B;
+    }
+    .logo {
+      width: 150px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="loading">
+    <img src="assets/logouniversidad.png" alt="Logo" class="logo">
+    <h2>Sistema Educativo</h2>
+    <p>Redirigiendo al sistema...</p>
+  </div>
+
+  <script>
+    // Redirigir automáticamente al login después de 1 segundo
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 1000);
+  </script>
+</body>
+</html>

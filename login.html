@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sistema Educativo - Inicio de Sesión</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #f5f5dc 0%, #e8e8d8 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .logouniversidad {
+      width: 200px;
+      height: auto;
+      margin: 20px 0;
+    }
+
+    .imagenalumno-container {
+      position: relative;
+      margin: 30px 0;
+    }
+
+    .circulo-externo {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: #6B8E6B;
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      z-index: 1;
+    }
+
+    .circulo-interno {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: #8FBC8F;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+    }
+
+    .imagenalumno {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      object-fit: cover;
+      position: relative;
+      z-index: 3;
+    }
+
+    .formulario {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .icono-usuario {
+      margin-bottom: 20px;
+    }
+
+    .icono-usuario img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      padding: 15px;
+    }
+
+    .formulario label {
+      display: block;
+      font-weight: bold;
+      color: #333;
+      margin: 15px 0 5px;
+      text-align: left;
+    }
+
+    .formulario input[type="text"],
+    .formulario input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+
+    .formulario input[type="text"]:focus,
+    .formulario input[type="password"]:focus {
+      outline: none;
+      border-color: #6B8E6B;
+    }
+
+    .olvide-contrasena {
+      display: block;
+      color: #6B8E6B;
+      text-decoration: none;
+      font-size: 14px;
+      margin: 10px 0;
+      text-align: right;
+    }
+
+    .olvide-contrasena:hover {
+      text-decoration: underline;
+    }
+
+    .formulario input[type="submit"] {
+      width: 100%;
+      padding: 15px;
+      background: #6B8E6B;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 20px 0;
+      transition: background 0.3s;
+    }
+
+    .formulario input[type="submit"]:hover {
+      background: #5a7a5a;
+    }
+
+    .registrarse {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .registrarse a {
+      color: #6B8E6B;
+      text-decoration: none;
+    }
+
+    .registrarse a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      background: #ffebee;
+      color: #c62828;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      display: none;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    @media (max-width: 768px) {
+      .formulario {
+        padding: 20px;
+        margin: 0 10px;
+      }
+      
+      .logouniversidad {
+        width: 150px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Logo universidad -->
+  <img src="assets/logouniversidad (2).png" class="logouniversidad" alt="Logo Universidad" />
+
+  <!-- Imagen alumno con círculos -->
+ <!--  <div class="imagenalumno-container">
+    <div class="circulo-externo"></div>
+    <div class="circulo-interno"></div>
+    <img src="assets/imagenalumno.png" class="imagenalumno" alt="Alumno" />
+  </div> -->
+
+  <!-- Formulario -->
+  <div class="formulario">
+    <div class="icono-usuario">
+      <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Usuario">
+    </div>
+    
+    <div class="error-message" id="errorMessage"></div>
+    <div class="loading" id="loading">Iniciando sesión...</div>
+    
+    <form id="loginForm">
+      <label for="usuario">USUARIO:</label>
+      <input type="text" id="usuario" required />
+
+      <label for="password">CONTRASEÑA:</label>
+      <input type="password" id="password" required />
+      
+      <a href="#" class="olvide-contrasena">¿Olvidó su contraseña?</a>
+      <input type="submit" value="INICIAR" />
+      <p class="registrarse">¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+    </form>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const loginForm = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('errorMessage');
+    const loading = document.getElementById('loading');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('usuario').value;
+      const password = document.getElementById('password').value;
+
+      loading.style.display = 'block';
+      errorMessage.style.display = 'none';
+
+      try {
+        // Autenticar usuario
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Obtener rol del usuario
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const role = userData.role;
+
+          // Redirigir según el rol
+          switch(role) {
+            case 'ADMIN':
+              window.location.href = 'admin-dashboard.html';
+              break;
+            case 'DOCENTE':
+              window.location.href = 'docente-dashboard.html';
+              break;
+            case 'ALUMNO':
+              window.location.href = 'alumno-dashboard.html';
+              break;
+            default:
+              throw new Error('Rol de usuario no válido');
+          }
+        } else {
+          throw new Error('Usuario no encontrado en la base de datos');
+        }
+
+      } catch (error) {
+        console.error('Error en login:', error);
+        let errorText = 'Error al iniciar sesión';
+        
+        switch(error.code) {
+          case 'auth/user-not-found':
+            errorText = 'Usuario no encontrado';
+            break;
+          case 'auth/wrong-password':
+            errorText = 'Contraseña incorrecta';
+            break;
+          case 'auth/invalid-email':
+            errorText = 'Email no válido';
+            break;
+          default:
+            errorText = error.message;
+        }
+        
+        errorMessage.textContent = errorText;
+        errorMessage.style.display = 'block';
+      } finally {
+        loading.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

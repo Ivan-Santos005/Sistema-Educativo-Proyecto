@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Docente</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f5dc 0%, #e8e8d8 100%);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: #6B8E6B;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 24px;
+    }
+
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logout-btn, .back-btn {
+      background: #5a7a5a;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .back-btn {
+      background: #8FBC8F;
+      display: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+
+    /* Menú Principal */
+    .main-menu {
+      display: block;
+      text-align: center;
+    }
+
+    .menu-title {
+      background: #6B8E6B;
+      color: white;
+      padding: 20px;
+      border-radius: 50px;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .menu-options {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .menu-option {
+      background: white;
+      border-radius: 20px;
+      padding: 40px 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+      min-width: 200px;
+    }
+
+    .menu-option:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .menu-option h3 {
+      font-size: 24px;
+      color: #6B8E6B;
+      margin-bottom: 15px;
+    }
+
+    .menu-option p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    /* Lista de Materias */
+    .materias-list {
+      display: none;
+    }
+
+    .view-header {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .view-header h2 {
+      color: #6B8E6B;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .breadcrumb {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .materias-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .materia-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .materia-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .materia-card h3 {
+      color: #6B8E6B;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .materia-card p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    /* Vista de Calificaciones */
+    .calificaciones-view {
+      display: none;
+    }
+
+    .info-fields {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .field-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .field-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .field-group label {
+      display: block;
+      font-weight: bold;
+      color: #8B7355;
+      background: #E8DCC6;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .field-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      background: #f8f9fa;
+    }
+
+    /* Tabla de estudiantes */
+    .students-section {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .students-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .students-header h3 {
+      color: #6B8E6B;
+      font-size: 20px;
+    }
+
+    .save-btn, .export-btn {
+      background: #6B8E6B;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+
+    .save-btn:hover, .export-btn:hover {
+      background: #5a7a5a;
+    }
+
+    .export-btn {
+      background: #4caf50;
+    }
+
+    .students-table-container {
+      background: #6B8E6B;
+      border-radius: 15px;
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    .students-table {
+      width: 100%;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      border-collapse: collapse;
+    }
+
+    .students-table th,
+    .students-table td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    .students-table th {
+      background: #f8f9fa;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .error-message {
+      background: #ffebee;
+      color: #c62828;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: none;
+    }
+
+    .success-message {
+      background: #e8f5e8;
+      color: #2e7d32;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .menu-options {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .field-row {
+        flex-direction: column;
+      }
+      
+      .students-table-container {
+        overflow-x: scroll;
+      }
+      
+      .container {
+        padding: 0 10px;
+      }
+
+      .students-header {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Dashboard Docente</h1>
+    <div class="header-info">
+      <button class="back-btn" id="backBtn" onclick="goBack()">← Regresar</button>
+      <span id="docenteName">Cargando...</span>
+      <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Menú Principal -->
+    <div class="main-menu" id="mainMenu">
+      <div class="menu-title">EVALUACIÓN DOCENTE</div>
+      <div class="menu-options">
+        <div class="menu-option" onclick="showMaterias('asistencia')">
+          <h3>SER</h3>
+          <p>Asistencia y participación</p>
+        </div>
+        <div class="menu-option" onclick="showMaterias('actitudes')">
+          <h3>SABER SER</h3>
+          <p>Actitudes y valores</p>
+        </div>
+        <div class="menu-option" onclick="showMaterias('conocimientos')">
+          <h3>SABER</h3>
+          <p>Conocimientos técnicos</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de Materias -->
+    <div class="materias-list" id="materiasList">
+      <div class="view-header">
+        <h2 id="tipoEvaluacion">EVALUACIÓN</h2>
+        <div class="breadcrumb">
+          Seleccione una materia para calificar
+        </div>
+      </div>
+      <div class="materias-grid" id="materiasGrid">
+        <div class="loading">Cargando materias asignadas...</div>
+      </div>
+    </div>
+
+    <!-- Vista de Calificaciones -->
+    <div class="calificaciones-view" id="calificacionesView">
+      <div class="view-header">
+        <h2 id="currentMateria">MATERIA</h2>
+        <div class="breadcrumb">
+          <span id="currentTipo"></span> - <span id="currentMateriaName"></span>
+        </div>
+      </div>
+
+      <div class="info-fields">
+        <div class="field-row">
+          <div class="field-group">
+            <label>DOCENTE:</label>
+            <input type="text" id="docenteField" readonly>
+          </div>
+          <div class="field-group">
+            <label>ASIGNATURA:</label>
+            <input type="text" id="asignaturaField" readonly>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>GRUPO:</label>
+            <input type="text" id="grupoField" readonly>
+          </div>
+          <div class="field-group">
+            <label>TIPO EVALUACIÓN:</label>
+            <input type="text" id="tipoEvaluacionField" readonly>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-message" id="errorMessage"></div>
+      <div class="success-message" id="successMessage"></div>
+
+      <div class="students-section">
+        <div class="students-header">
+          <h3>Alumnos Inscritos</h3>
+          <div>
+            <button class="export-btn" onclick="exportarCalificaciones()">📊 Exportar CSV</button>
+            <button class="save-btn" onclick="guardarCalificaciones()">💾 Guardar Cambios</button>
+          </div>
+        </div>
+        
+        <div class="students-table-container">
+          <table class="students-table" id="studentsTable">
+            <tbody>
+              <tr>
+                <td colspan="100%" class="loading">Cargando estudiantes...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './js/firebase-config.js';
+    import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { 
+      collection, 
+      getDocs, 
+      doc, 
+      getDoc,
+      query,
+      where
+    } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    // Importar módulo de calificaciones
+    import { 
+      getEstudiantesMateria,
+      getCalificacionesCurso,
+      guardarCalificaciones,
+      generarTablaCalificaciones,
+      recopilarCalificaciones,
+      validarCalificaciones,
+      mostrarNotificacion,
+      exportarCalificacionesCSV
+    } from './js/calificaciones.js';
+
+    let currentUser = null;
+    let currentView = 'menu'; // menu, materias, calificaciones
+    let currentEvaluationType = null;
+    let currentMateriaData = null;
+    let materiasAsignadas = [];
+    let estudiantesActuales = [];
+    let calificacionesActuales = {};
+
+    // Verificar autenticación
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      currentUser = user;
+      await loadDocenteInfo();
+      await loadMateriasAsignadas();
+    });
+
+    // Cargar información del docente
+    async function loadDocenteInfo() {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          document.getElementById('docenteName').textContent = userData.nombre;
+          document.getElementById('docenteField').value = userData.nombre;
+        }
+      } catch (error) {
+        console.error('Error cargando información del docente:', error);
+        showError('Error cargando información del docente');
+      }
+    }
+
+    // Cargar materias asignadas al docente
+    async function loadMateriasAsignadas() {
+      try {
+        console.log('Cargando materias para docente:', currentUser.uid);
+        
+        const asignacionesQuery = query(
+          collection(db, 'asignaciones'), 
+          where('docenteId', '==', currentUser.uid)
+        );
+        const asignacionesSnapshot = await getDocs(asignacionesQuery);
+        
+        materiasAsignadas = [];
+        
+        for (const asignacionDoc of asignacionesSnapshot.docs) {
+          const asignacion = asignacionDoc.data();
+          
+          // Obtener información de la materia
+          const materiaDoc = await getDoc(doc(db, 'materias', asignacion.materiaId));
+          if (materiaDoc.exists()) {
+            materiasAsignadas.push({
+              ...asignacion,
+              materiaInfo: { id: materiaDoc.id, ...materiaDoc.data() },
+              materiaId: asignacion.materiaId
+            });
+          }
+        }
+        
+        console.log('Materias asignadas encontradas:', materiasAsignadas);
+      } catch (error) {
+        console.error('Error cargando materias asignadas:', error);
+        showError('Error cargando materias asignadas');
+      }
+    }
+
+    // Navegación
+    window.showMaterias = function(tipoEvaluacion) {
+      currentView = 'materias';
+      currentEvaluationType = tipoEvaluacion;
+      
+      document.getElementById('mainMenu').style.display = 'none';
+      document.getElementById('materiasList').style.display = 'block';
+      document.getElementById('backBtn').style.display = 'inline-block';
+      
+      // Actualizar títulos
+      const titulos = {
+        'asistencia': 'SER - Asistencia',
+        'actitudes': 'SABER SER - Actitudes',
+        'conocimientos': 'SABER - Conocimientos'
+      };
+      
+      document.getElementById('tipoEvaluacion').textContent = titulos[tipoEvaluacion];
+      
+      renderMateriasList();
+    };
+
+    window.showCalificaciones = async function(materiaIndex) {
+      currentView = 'calificaciones';
+      currentMateriaData = materiasAsignadas[materiaIndex];
+      
+      document.getElementById('materiasList').style.display = 'none';
+      document.getElementById('calificacionesView').style.display = 'block';
+      
+      // Llenar campos de información
+      document.getElementById('currentMateria').textContent = currentMateriaData.materiaInfo.nombre;
+      document.getElementById('currentTipo').textContent = document.getElementById('tipoEvaluacion').textContent;
+      document.getElementById('currentMateriaName').textContent = currentMateriaData.materiaInfo.nombre;
+      
+      document.getElementById('asignaturaField').value = currentMateriaData.materiaInfo.nombre;
+      document.getElementById('grupoField').value = currentMateriaData.grupo;
+      document.getElementById('tipoEvaluacionField').value = document.getElementById('tipoEvaluacion').textContent;
+      
+      await loadStudentsAndGrades();
+    };
+
+    window.goBack = function() {
+      if (currentView === 'calificaciones') {
+        document.getElementById('calificacionesView').style.display = 'none';
+        document.getElementById('materiasList').style.display = 'block';
+        currentView = 'materias';
+      } else if (currentView === 'materias') {
+        document.getElementById('materiasList').style.display = 'none';
+        document.getElementById('mainMenu').style.display = 'block';
+        document.getElementById('backBtn').style.display = 'none';
+        currentView = 'menu';
+      }
+    };
+
+    window.logout = async function() {
+      try {
+        await signOut(auth);
+        window.location.href = 'login.html';
+      } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+      }
+    };
+
+    // Renderizar lista de materias
+    function renderMateriasList() {
+      const grid = document.getElementById('materiasGrid');
+      
+      if (materiasAsignadas.length === 0) {
+        grid.innerHTML = '<div class="loading">No hay materias asignadas</div>';
+        return;
+      }
+      
+      let html = '';
+      materiasAsignadas.forEach((materia, index) => {
+        html += `
+          <div class="materia-card" onclick="showCalificaciones(${index})">
+            <h3>${materia.materiaInfo.nombre}</h3>
+            <p><strong>Código:</strong> ${materia.materiaInfo.codigo}</p>
+            <p><strong>Grupo:</strong> ${materia.grupo}</p>
+            <p><strong>Unidades:</strong> ${materia.materiaInfo.unidades ? materia.materiaInfo.unidades.length : 0}</p>
+          </div>
+        `;
+      });
+      
+      grid.innerHTML = html;
+    }
+
+    // Cargar estudiantes y calificaciones
+    async function loadStudentsAndGrades() {
+      const tableBody = document.querySelector('#studentsTable tbody');
+      tableBody.innerHTML = '<tr><td colspan="100%" class="loading">Cargando estudiantes...</td></tr>';
+      
+      try {
+        // Obtener estudiantes
+        estudiantesActuales = await getEstudiantesMateria(
+          currentMateriaData.materiaId, 
+          currentMateriaData.grupo
+        );
+        
+        if (estudiantesActuales.length === 0) {
+          tableBody.innerHTML = '<tr><td colspan="100%">No hay estudiantes inscritos en esta materia</td></tr>';
+          return;
+        }
+        
+        // Obtener calificaciones existentes
+        calificacionesActuales = await getCalificacionesCurso(
+          currentMateriaData.materiaInfo, 
+          currentMateriaData.grupo
+        );
+        
+        // Generar tabla
+        const tablaHTML = generarTablaCalificaciones(
+          estudiantesActuales,
+          currentMateriaData.materiaInfo.unidades || ['Unidad 1', 'Unidad 2', 'Unidad 3'],
+          currentEvaluationType,
+          calificacionesActuales
+        );
+        
+        document.getElementById('studentsTable').innerHTML = tablaHTML;
+        
+      } catch (error) {
+        console.error('Error cargando estudiantes y calificaciones:', error);
+        showError('Error cargando datos: ' + error.message);
+        tableBody.innerHTML = '<tr><td colspan="100%">Error cargando estudiantes</td></tr>';
+      }
+    }
+
+    // Guardar calificaciones
+    window.guardarCalificaciones = async function() {
+      try {
+        showSuccess('Guardando calificaciones...');
+        
+        // Recopilar calificaciones de la tabla
+        const nuevasCalificaciones = recopilarCalificaciones();
+        
+        // Validar calificaciones
+        const errores = validarCalificaciones(nuevasCalificaciones);
+        if (errores.length > 0) {
+          showError('Errores en las calificaciones: ' + errores.join(', '));
+          return;
+        }
+        
+        // Combinar con calificaciones existentes
+        const calificacionesCombinadas = { ...calificacionesActuales };
+        
+        Object.keys(nuevasCalificaciones).forEach(estudianteId => {
+          if (!calificacionesCombinadas[estudianteId]) {
+            calificacionesCombinadas[estudianteId] = { unidades: {} };
+          }
+          
+          // Combinar unidades
+          Object.keys(nuevasCalificaciones[estudianteId].unidades).forEach(unidadKey => {
+            if (!calificacionesCombinadas[estudianteId].unidades[unidadKey]) {
+              calificacionesCombinadas[estudianteId].unidades[unidadKey] = {};
+            }
+            
+            // Actualizar criterios
+            Object.assign(
+              calificacionesCombinadas[estudianteId].unidades[unidadKey],
+              nuevasCalificaciones[estudianteId].unidades[unidadKey]
+            );
+          });
+          
+          calificacionesCombinadas[estudianteId].lastUpdated = new Date().toISOString();
+        });
+        
+        // Guardar en Firebase
+        const resultado = await guardarCalificaciones(
+          currentMateriaData.materiaInfo,
+          currentMateriaData.grupo,
+          calificacionesCombinadas,
+          currentUser.uid
+        );
+        
+        if (resultado.success) {
+          showSuccess('✅ Calificaciones guardadas exitosamente');
+          calificacionesActuales = calificacionesCombinadas;
+          mostrarNotificacion('Calificaciones guardadas exitosamente', 'success');
+        } else {
+          showError('Error guardando calificaciones: ' + resultado.error);
+        }
+        
+      } catch (error) {
+        console.error('Error guardando calificaciones:', error);
+        showError('Error guardando calificaciones: ' + error.message);
+      }
+    };
+
+    // Exportar calificaciones a CSV
+    window.exportarCalificaciones = function() {
+      try {
+        exportarCalificacionesCSV(
+          estudiantesActuales,
+          calificacionesActuales,
+          currentMateriaData.materiaInfo,
+          currentMateriaData.grupo
+        );
+        mostrarNotificacion('Archivo CSV exportado exitosamente', 'success');
+      } catch (error) {
+        console.error('Error exportando calificaciones:', error);
+        showError('Error exportando calificaciones: ' + error.message);
+      }
+    };
+
+    // Utilidades para mostrar mensajes
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      const successDiv = document.getElementById('successMessage');
+      
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      successDiv.style.display = 'none';
+      
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    function showSuccess(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      const successDiv = document.getElementById('successMessage');
+      
+      successDiv.textContent = message;
+      successDiv.style.display = 'block';
+      errorDiv.style.display = 'none';
+      
+      setTimeout(() => {
+        successDiv.style.display = 'none';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

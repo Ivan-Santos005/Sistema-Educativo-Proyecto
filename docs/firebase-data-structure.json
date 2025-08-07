@@ -1,0 +1,223 @@
+{
+  "users": {
+    "descripcion": "Colección de usuarios del sistema",
+    "ejemplo": {
+      "userId123": {
+        "nombre": "Juan Pérez García",
+        "email": "juan.perez@universidad.edu.mx",
+        "role": "DOCENTE",
+        "numeroControl": "DOC001",
+        "createdAt": "2025-01-15T10:30:00.000Z",
+        "status": "active"
+      },
+      "userId456": {
+        "nombre": "María González López",
+        "email": "maria.gonzalez@universidad.edu.mx",
+        "role": "ALUMNO",
+        "numeroControl": "20250001",
+        "createdAt": "2025-01-15T11:00:00.000Z",
+        "status": "active"
+      },
+      "userId789": {
+        "nombre": "Carlos Admin Rodríguez",
+        "email": "admin@universidad.edu.mx",
+        "role": "ADMIN",
+        "numeroControl": "ADMIN001",
+        "createdAt": "2025-01-15T09:00:00.000Z",
+        "status": "active"
+      }
+    }
+  },
+  "materias": {
+    "descripcion": "Colección de materias/asignaturas",
+    "ejemplo": {
+      "materia001": {
+        "codigo": "FIS101",
+        "nombre": "Física I",
+        "unidades": [
+          "Mecánica",
+          "Cinemática", 
+          "Dinámica",
+          "Energía"
+        ],
+        "creditos": 6,
+        "semestre": 1,
+        "createdAt": "2025-01-15T08:00:00.000Z"
+      },
+      "materia002": {
+        "codigo": "MAT101",
+        "nombre": "Matemáticas I",
+        "unidades": [
+          "Álgebra",
+          "Geometría",
+          "Trigonometría",
+          "Funciones"
+        ],
+        "creditos": 5,
+        "semestre": 1,
+        "createdAt": "2025-01-15T08:15:00.000Z"
+      },
+      "materia003": {
+        "codigo": "SIM3D",
+        "nombre": "Simulación 3D",
+        "unidades": [
+          "Modelado 3D",
+          "Animación",
+          "Renderizado",
+          "Realidad Virtual"
+        ],
+        "creditos": 8,
+        "semestre": 8,
+        "createdAt": "2025-01-15T08:30:00.000Z"
+      }
+    }
+  },
+  "asignaciones": {
+    "descripcion": "Relación docente-materia-grupo",
+    "ejemplo": {
+      "asignacion001": {
+        "docenteId": "userId123",
+        "materiaId": "materia001",
+        "grupo": "A1",
+        "periodo": "2025-1",
+        "createdAt": "2025-01-15T12:00:00.000Z"
+      },
+      "asignacion002": {
+        "docenteId": "userId123",
+        "materiaId": "materia003",
+        "grupo": "B2",
+        "periodo": "2025-1",
+        "createdAt": "2025-01-15T12:15:00.000Z"
+      }
+    }
+  },
+  "inscripciones": {
+    "descripcion": "Relación alumno-materia-grupo",
+    "ejemplo": {
+      "inscripcion001": {
+        "alumnoId": "userId456",
+        "materiaId": "materia001",
+        "grupo": "A1",
+        "periodo": "2025-1",
+        "status": "activa",
+        "createdAt": "2025-01-15T13:00:00.000Z"
+      },
+      "inscripcion002": {
+        "alumnoId": "userId456",
+        "materiaId": "materia003",
+        "grupo": "B2",
+        "periodo": "2025-1",
+        "status": "activa",
+        "createdAt": "2025-01-15T13:15:00.000Z"
+      }
+    }
+  },
+  "calificaciones": {
+    "descripcion": "Estructura de calificaciones por curso",
+    "ejemplo": {
+      "curso_FIS101_A1": {
+        "estudiantes": {
+          "userId456": {
+            "unidades": {
+              "unidad_0": {
+                "asistencia": 9,
+                "responsabilidad": 8,
+                "disposicion": 9,
+                "conocimientos": 8
+              },
+              "unidad_1": {
+                "asistencia": 10,
+                "responsabilidad": 9,
+                "disposicion": 8,
+                "conocimientos": 9
+              },
+              "unidad_2": {
+                "asistencia": 8,
+                "responsabilidad": 9,
+                "disposicion": 9,
+                "conocimientos": 7
+              },
+              "unidad_3": {
+                "asistencia": 9,
+                "responsabilidad": 10,
+                "disposicion": 8,
+                "conocimientos": 9
+              }
+            },
+            "lastUpdated": "2025-01-15T15:30:00.000Z"
+          }
+        },
+        "metadata": {
+          "docenteId": "userId123",
+          "materiaId": "materia001",
+          "grupo": "A1",
+          "periodo": "2025-1"
+        }
+      },
+      "curso_SIM3D_B2": {
+        "estudiantes": {
+          "userId456": {
+            "unidades": {
+              "unidad_0": {
+                "asistencia": 10,
+                "responsabilidad": 9,
+                "disposicion": 9,
+                "conocimientos": 8
+              },
+              "unidad_1": {
+                "asistencia": 9,
+                "responsabilidad": 8,
+                "disposicion": 8,
+                "conocimientos": 9
+              },
+              "unidad_2": {
+                "asistencia": 8,
+                "responsabilidad": 9,
+                "disposicion": 9,
+                "conocimientos": 8
+              },
+              "unidad_3": {
+                "asistencia": 10,
+                "responsabilidad": 10,
+                "disposicion": 9,
+                "conocimientos": 9
+              }
+            },
+            "lastUpdated": "2025-01-15T16:00:00.000Z"
+          }
+        },
+        "metadata": {
+          "docenteId": "userId123",
+          "materiaId": "materia003",
+          "grupo": "B2",
+          "periodo": "2025-1"
+        }
+      }
+    }
+  },
+  "notas_configuracion": {
+    "roles_disponibles": [
+      "ADMIN - Acceso completo al sistema, gestión de usuarios, materias y asignaciones",
+      "DOCENTE - Acceso a sus materias asignadas para capturar calificaciones",
+      "ALUMNO - Consulta de sus calificaciones en materias inscritas"
+    ],
+    "tipos_evaluacion": {
+      "SER": {
+        "descripcion": "Asistencia y participación",
+        "criterios": ["asistencia"]
+      },
+      "SABER_SER": {
+        "descripcion": "Actitudes y valores",
+        "criterios": ["responsabilidad", "disposicion"]
+      },
+      "SABER": {
+        "descripcion": "Conocimientos técnicos",
+        "criterios": ["conocimientos"]
+      }
+    },
+    "reglas_firestore": {
+      "descripcion": "Reglas de seguridad recomendadas para Firestore",
+      "reglas": "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    // Permitir lectura/escritura solo a usuarios autenticados\n    match /{document=**} {\n      allow read, write: if request.auth != null;\n    }\n    \n    // Reglas específicas para usuarios\n    match /users/{userId} {\n      allow read, write: if request.auth != null && request.auth.uid == userId;\n      allow read: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';\n    }\n    \n    // Reglas para calificaciones\n    match /calificaciones/{cursoId}/estudiantes/{estudianteId} {\n      allow read: if request.auth != null && \n        (request.auth.uid == estudianteId || \n         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['ADMIN', 'DOCENTE']);\n      allow write: if request.auth != null && \n        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['ADMIN', 'DOCENTE'];\n    }\n  }\n}"
+    }
+  }
+}
