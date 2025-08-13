@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Administración</title>
+  <link rel="stylesheet" href="menu.css">
   <style>
+    
     * {
       margin: 0;
       padding: 0;
@@ -30,6 +32,23 @@
       font-size: 24px;
     }
 
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .role-badge {
+      background: rgba(255,255,255,0.2);
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .poweruser { background: linear-gradient(45deg, #ff6b6b, #ffd93d); }
+    .admin { background: linear-gradient(45deg, #4ecdc4, #44a08d); }
+
     .logout-btn {
       background: #5a7a5a;
       color: white;
@@ -40,10 +59,13 @@
     }
 
     .container {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 0 20px;
-    }
+  max-width: 1200px;
+  margin: 20px auto;
+  padding-top: 60px;   /* espacio debajo del header */
+  padding-left: 20px;  /* padding izquierdo */
+  padding-right: 20px; /* padding derecho */
+}
+
 
     .tabs {
       display: flex;
@@ -358,6 +380,29 @@
       color: #721c24;
     }
 
+    .role-badge-table {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .role-poweruser { background: linear-gradient(45deg, #ff6b6b, #ffd93d); }
+    .role-admin { background: linear-gradient(45deg, #4ecdc4, #44a08d); }
+    .role-docente { background: #6B8E6B; }
+    .role-alumno { background: #17a2b8; }
+
+    .permission-notice {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      color: #856404;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
     .notification {
       position: fixed;
       top: 20px;
@@ -424,7 +469,12 @@
 <body>
   <div class="header">
     <h1>🛠️ Panel de Administración</h1>
-    <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+    <div class="header-info">
+      <span class="role-badge" id="userRoleBadge">ADMIN</span>
+      <span id="userName">Cargando...</span>
+      <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+      
+    </div>
   </div>
 
   <div class="container">
@@ -445,6 +495,10 @@
           </div>
         </div>
 
+        <div class="permission-notice" id="permissionNotice" style="display: none;">
+          <strong>ℹ️ Permisos limitados:</strong> <span id="permissionText"></span>
+        </div>
+
         <div class="stats-container">
           <div class="stat-card">
             <div class="stat-number" id="totalUsuarios">0</div>
@@ -462,12 +516,17 @@
             <div class="stat-number" id="totalAdmins">0</div>
             <div class="stat-label">Administradores</div>
           </div>
+          <div class="stat-card">
+            <div class="stat-number" id="totalPowerUsers">0</div>
+            <div class="stat-label">Power Users</div>
+          </div>
         </div>
 
         <div class="search-container">
           <input type="text" class="search-input" placeholder="Buscar por nombre o email..." id="searchUsers">
           <select class="filter-select" id="filterUserRole">
             <option value="">Todos los roles</option>
+            <option value="POWERUSER">Power Users</option>
             <option value="ADMIN">Administradores</option>
             <option value="DOCENTE">Docentes</option>
             <option value="ALUMNO">Alumnos</option>
@@ -527,13 +586,14 @@
                 <th>Nombre</th>
                 <th>Créditos</th>
                 <th>Unidades</th>
+                <th>Grupos</th>
                 <th>Semestre</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody id="materiasTable">
               <tr>
-                <td colspan="6" class="loading">Cargando materias...</td>
+                <td colspan="7" class="loading">Cargando materias...</td>
               </tr>
             </tbody>
           </table>
@@ -657,7 +717,7 @@
         <div class="form-row">
           <div class="form-group">
             <label for="userName">Nombre Completo:</label>
-            <input type="text" id="userName" required>
+            <input type="text" id="userNameInput" required>
           </div>
           <div class="form-group">
             <label for="userEmail">Email:</label>
@@ -673,9 +733,7 @@
             <label for="userRole">Rol:</label>
             <select id="userRole" required>
               <option value="">Seleccionar rol</option>
-              <option value="ADMIN">Administrador</option>
-              <option value="DOCENTE">Docente</option>
-              <option value="ALUMNO">Alumno</option>
+              <!-- Las opciones se llenarán dinámicamente según permisos -->
             </select>
           </div>
         </div>
@@ -730,6 +788,10 @@
           <label for="materiaUnidades">Unidades (separadas por coma):</label>
           <input type="text" id="materiaUnidades" placeholder="Unidad 1, Unidad 2, Unidad 3" required>
         </div>
+        <div class="form-group">
+          <label for="materiaGrupos">Grupos (separados por coma):</label>
+          <input type="text" id="materiaGrupos" placeholder="A, B, C" required>
+        </div>
         <div class="form-buttons">
           <button type="button" class="btn-cancel" onclick="closeModal('materiaModal')">Cancelar</button>
           <button type="submit" class="btn-save">Guardar</button>
@@ -761,7 +823,9 @@
         <div class="form-row">
           <div class="form-group">
             <label for="asignacionGrupo">Grupo:</label>
-            <input type="text" id="asignacionGrupo" placeholder="A1, B2, etc." required>
+            <select id="asignacionGrupo" required>
+              <option value="">Seleccionar grupo</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="asignacionPeriodo">Periodo:</label>
@@ -803,7 +867,9 @@
         <div class="form-row">
           <div class="form-group">
             <label for="inscripcionGrupo">Grupo:</label>
-            <input type="text" id="inscripcionGrupo" placeholder="A1, B2, etc." required>
+            <select id="inscripcionGrupo" required>
+              <option value="">Seleccione una materia primero</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="inscripcionPeriodo">Periodo:</label>
@@ -875,11 +941,13 @@
   <div id="notification" class="notification"></div>
 
   <script type="module">
-    import { auth, db } from './js/firebase-config.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { auth, db, firebaseConfig } from './js/firebase-config.js';
     import { 
       createUserWithEmailAndPassword, 
       signOut,
-      onAuthStateChanged 
+      onAuthStateChanged,
+      getAuth
     } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
     import { 
       collection, 
@@ -891,9 +959,16 @@
       updateDoc,
       query,
       where,
-      orderBy
+      orderBy,
+      getDoc
     } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
+    // Crear una instancia secundaria de Firebase para el registro de usuarios
+    const secondaryApp = initializeApp(firebaseConfig, "secondary");
+    const secondaryAuth = getAuth(secondaryApp);
+
+    let currentUser = null;
+    let currentUserRole = null;
     let currentUserId = null;
     let currentMateriaId = null;
     let currentAsignacionId = null;
@@ -903,12 +978,119 @@
     let allAsignaciones = [];
     let allInscripciones = [];
 
+    // Definir permisos por rol
+    const rolePermissions = {
+      POWERUSER: {
+        canCreateRoles: ['POWERUSER', 'ADMIN', 'DOCENTE', 'ALUMNO'],
+        canDeleteAnyUser: true,
+        canEditAnyUser: true,
+        hasFullAccess: true
+      },
+      ADMIN: {
+        canCreateRoles: ['DOCENTE', 'ALUMNO'],
+        canDeleteAnyUser: false, // Solo pueden eliminar usuarios que crearon
+        canEditAnyUser: false,
+        hasFullAccess: false
+      },
+      DOCENTE: {
+        canCreateRoles: ['ALUMNO'],
+        canDeleteAnyUser: false,
+        canEditAnyUser: false,
+        hasFullAccess: false
+      }
+    };
+
     // Verificar autenticación
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = 'login.html';
+        return;
       }
+      
+      currentUser = user;
+      await loadCurrentUserInfo();
+      if (!checkAccess()) {
+        window.location.href = 'login.html';
+        return;
+      }
+      setupInterface();
     });
+
+    // Cargar información del usuario actual
+    async function loadCurrentUserInfo() {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          currentUserRole = userData.role;
+          document.getElementById('userName').textContent = userData.nombre;
+          updateRoleBadge(currentUserRole);
+          showPermissionNotice();
+        }
+      } catch (error) {
+        console.error('Error cargando información del usuario:', error);
+      }
+    }
+
+    // Verificar acceso
+    function checkAccess() {
+      return ['POWERUSER', 'ADMIN'].includes(currentUserRole);
+    }
+
+    // Actualizar badge de rol
+    function updateRoleBadge(role) {
+      const badge = document.getElementById('userRoleBadge');
+      badge.textContent = role;
+      badge.className = `role-badge ${role.toLowerCase()}`;
+    }
+
+    // Mostrar aviso de permisos
+    function showPermissionNotice() {
+      const notice = document.getElementById('permissionNotice');
+      const text = document.getElementById('permissionText');
+      
+      if (currentUserRole === 'ADMIN') {
+        notice.style.display = 'block';
+        text.textContent = 'Como ADMIN, solo puedes crear usuarios DOCENTE y ALUMNO.';
+      } else if (currentUserRole === 'POWERUSER') {
+        notice.style.display = 'block';
+        notice.style.background = '#e8f5e8';
+        notice.style.borderColor = '#28a745';
+        notice.style.color = '#155724';
+        text.textContent = 'Como POWERUSER, tienes acceso completo a todas las funcionalidades.';
+      }
+    }
+
+    // Configurar interfaz según permisos
+    async function setupInterface() {
+      const permissions = rolePermissions[currentUserRole];
+      
+      // Configurar opciones de rol en el modal
+      setupRoleOptions();
+      
+      // Cargar datos iniciales
+      await loadUsers();
+      await loadMaterias();
+    }
+
+    // Configurar opciones de rol disponibles
+    function setupRoleOptions() {
+      const roleSelect = document.getElementById('userRole');
+      const permissions = rolePermissions[currentUserRole];
+      
+      let options = '<option value="">Seleccionar rol</option>';
+      permissions.canCreateRoles.forEach(role => {
+        const roleNames = {
+          'POWERUSER': 'Power User',
+          'ADMIN': 'Administrador',
+          'DOCENTE': 'Docente',
+          'ALUMNO': 'Alumno'
+        };
+        options += `<option value="${role}">${roleNames[role]}</option>`;
+      });
+      
+      roleSelect.innerHTML = options;
+    }
 
     // Funciones de navegación
     window.showTab = function(tabName) {
@@ -960,12 +1142,17 @@
       
       if (userId) {
         title.textContent = 'Editar Usuario';
-        // Cargar datos del usuario para editar
         const user = allUsers.find(u => u.id === userId);
         if (user) {
-          document.getElementById('userName').value = user.nombre;
+          // Verificar permisos de edición
+          if (!canEditUser(user)) {
+            showNotification('No tienes permisos para editar este usuario', 'error');
+            return;
+          }
+          
+          document.getElementById('userNameInput').value = user.nombre;
           document.getElementById('userEmail').value = user.email;
-          document.getElementById('userRole').value = user.role;
+          document.getElementById('userRole').value = user.role || 'ALUMNO';
           document.getElementById('userControl').value = user.numeroControl;
           document.getElementById('userStatus').value = user.status || 'active';
           document.getElementById('userPassword').removeAttribute('required');
@@ -976,8 +1163,37 @@
         document.getElementById('userPassword').setAttribute('required', '');
       }
       
+      setupRoleOptions(); // Actualizar opciones disponibles
       modal.style.display = 'block';
     };
+
+    // Verificar si puede editar usuario
+    function canEditUser(user) {
+      const permissions = rolePermissions[currentUserRole];
+      
+      if (permissions.hasFullAccess) return true;
+      
+      // ADMIN solo puede editar usuarios que no sean POWERUSER o ADMIN
+      if (currentUserRole === 'ADMIN') {
+        return !['POWERUSER', 'ADMIN'].includes(user.role);
+      }
+      
+      return false;
+    }
+
+    // Verificar si puede eliminar usuario
+    function canDeleteUser(user) {
+      const permissions = rolePermissions[currentUserRole];
+      
+      if (permissions.hasFullAccess) return true;
+      
+      // ADMIN solo puede eliminar DOCENTE y ALUMNO
+      if (currentUserRole === 'ADMIN') {
+        return ['DOCENTE', 'ALUMNO'].includes(user.role);
+      }
+      
+      return false;
+    }
 
     window.openMateriaModal = function(materiaId = null) {
       currentMateriaId = materiaId;
@@ -993,6 +1209,7 @@
           document.getElementById('materiaCreditos').value = materia.creditos || '';
           document.getElementById('materiaSemestre').value = materia.semestre || '';
           document.getElementById('materiaUnidades').value = Array.isArray(materia.unidades) ? materia.unidades.join(', ') : materia.unidades;
+          document.getElementById('materiaGrupos').value = Array.isArray(materia.grupos) ? materia.grupos.join(', ') : materia.grupos || '';
         }
       } else {
         title.textContent = 'Agregar Materia';
@@ -1002,12 +1219,33 @@
       modal.style.display = 'block';
     };
 
-    window.openAsignacionModal = async function() {
+    window.openAsignacionModal = async function(asignacionId = null) {
+      currentAsignacionId = asignacionId;
       const modal = document.getElementById('asignacionModal');
+      const title = document.querySelector('#asignacionModal h3');
+      
       document.getElementById('asignacionForm').reset();
       
       await loadDocentesSelect();
       await loadMateriasSelect();
+      
+      if (asignacionId) {
+        title.textContent = 'Editar Asignación';
+        const asignacion = allAsignaciones.find(a => a.id === asignacionId);
+        if (asignacion) {
+          document.getElementById('asignacionDocente').value = asignacion.docenteId;
+          document.getElementById('asignacionMateria').value = asignacion.materiaId;
+          document.getElementById('asignacionPeriodo').value = asignacion.periodo;
+          
+          // Cargar grupos de la materia y seleccionar el grupo de la asignación
+          loadGruposSelect(asignacion.materiaId);
+          setTimeout(() => {
+            document.getElementById('asignacionGrupo').value = asignacion.grupo;
+          }, 100);
+        }
+      } else {
+        title.textContent = 'Nueva Asignación';
+      }
       
       modal.style.display = 'block';
     };
@@ -1044,32 +1282,54 @@
         allUsers = [];
         let html = '';
         
-        let totalUsuarios = 0, totalDocentes = 0, totalAlumnos = 0, totalAdmins = 0;
+        let totalUsuarios = 0, totalDocentes = 0, totalAlumnos = 0, totalAdmins = 0, totalPowerUsers = 0;
         
         querySnapshot.forEach((doc) => {
           const user = { id: doc.id, ...doc.data() };
           allUsers.push(user);
           
           totalUsuarios++;
-          switch(user.role) {
+          const userRole = user.role || 'ALUMNO';
+          switch(userRole) {
             case 'DOCENTE': totalDocentes++; break;
             case 'ALUMNO': totalAlumnos++; break;
             case 'ADMIN': totalAdmins++; break;
+            case 'POWERUSER': totalPowerUsers++; break;
           }
           
           const statusClass = user.status === 'active' ? 'status-active' : 'status-inactive';
           const statusText = user.status === 'active' ? 'Activo' : 'Inactivo';
           
+          // Validar que el rol existe antes de procesarlo
+          const roleClass = `role-${userRole.toLowerCase()}`;
+          const roleText = {
+            'POWERUSER': 'Power User',
+            'ADMIN': 'Admin',
+            'DOCENTE': 'Docente',
+            'ALUMNO': 'Alumno'
+          }[userRole] || userRole;
+          
+          // Determinar acciones disponibles
+          const canEdit = canEditUser(user);
+          const canDelete = canDeleteUser(user);
+          
+          let actionsHTML = '';
+          if (canEdit) {
+            actionsHTML += `<button class="edit-btn" onclick="openUserModal('${user.id}')">Editar</button>`;
+          }
+          if (canDelete) {
+            actionsHTML += `<button class="delete-btn" onclick="deleteUser('${user.id}')">Eliminar</button>`;
+          }
+          
           html += `
             <tr>
               <td>${user.nombre}</td>
               <td>${user.email}</td>
-              <td>${user.role}</td>
+              <td><span class="role-badge-table ${roleClass}">${roleText}</span></td>
               <td>${user.numeroControl}</td>
               <td><span class="status-badge ${statusClass}">${statusText}</span></td>
               <td class="action-buttons">
-                <button class="edit-btn" onclick="openUserModal('${user.id}')">Editar</button>
-                <button class="delete-btn" onclick="deleteUser('${user.id}')">Eliminar</button>
+                ${actionsHTML || '<span style="color: #999;">Sin permisos</span>'}
               </td>
             </tr>
           `;
@@ -1080,6 +1340,7 @@
         document.getElementById('totalDocentes').textContent = totalDocentes;
         document.getElementById('totalAlumnos').textContent = totalAlumnos;
         document.getElementById('totalAdmins').textContent = totalAdmins;
+        document.getElementById('totalPowerUsers').textContent = totalPowerUsers;
         
         tableBody.innerHTML = html || '<tr><td colspan="6">No hay usuarios registrados</td></tr>';
       } catch (error) {
@@ -1104,12 +1365,14 @@
           totalCreditos += materia.creditos || 0;
           
           const unidades = Array.isArray(materia.unidades) ? materia.unidades.join(', ') : materia.unidades;
+          const grupos = Array.isArray(materia.grupos) ? materia.grupos.join(', ') : materia.grupos || 'N/A';
           html += `
             <tr>
               <td>${materia.codigo}</td>
               <td>${materia.nombre}</td>
               <td>${materia.creditos || 'N/A'}</td>
               <td>${materia.unidades ? materia.unidades.length : 0}</td>
+              <td>${grupos}</td>
               <td>${materia.semestre || 'N/A'}</td>
               <td class="action-buttons">
                 <button class="edit-btn" onclick="openMateriaModal('${materia.id}')">Editar</button>
@@ -1122,10 +1385,10 @@
         document.getElementById('totalMaterias').textContent = totalMaterias;
         document.getElementById('totalCreditos').textContent = totalCreditos;
         
-        tableBody.innerHTML = html || '<tr><td colspan="6">No hay materias registradas</td></tr>';
+        tableBody.innerHTML = html || '<tr><td colspan="7">No hay materias registradas</td></tr>';
       } catch (error) {
         console.error('Error cargando materias:', error);
-        tableBody.innerHTML = '<tr><td colspan="6">Error cargando materias</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="7">Error cargando materias</td></tr>';
       }
     }
 
@@ -1157,6 +1420,7 @@
               <td>${asignacion.periodo || 'N/A'}</td>
               <td>${fechaCreacion}</td>
               <td class="action-buttons">
+                <button class="edit-btn" onclick="openAsignacionModal('${asignacion.id}')">Editar</button>
                 <button class="delete-btn" onclick="deleteAsignacion('${asignacion.id}')">Eliminar</button>
               </td>
             </tr>
@@ -1254,6 +1518,25 @@
       });
       
       select.innerHTML = html;
+      
+      // Agregar event listener para cargar grupos cuando se seleccione materia
+      select.addEventListener('change', function() {
+        loadGruposSelect(this.value);
+      });
+    }
+
+    function loadGruposSelect(materiaId) {
+      const grupoSelect = document.getElementById('asignacionGrupo');
+      grupoSelect.innerHTML = '<option value="">Seleccionar grupo</option>';
+      
+      if (!materiaId) return;
+      
+      const materia = allMaterias.find(m => m.id === materiaId);
+      if (materia && materia.grupos) {
+        materia.grupos.forEach(grupo => {
+          grupoSelect.innerHTML += `<option value="${grupo}">${grupo}</option>`;
+        });
+      }
     }
 
     async function loadAlumnosSelect() {
@@ -1276,6 +1559,27 @@
       });
       
       select.innerHTML = html;
+
+      // Agregar event listener para cargar grupos cuando se seleccione materia
+      select.addEventListener('change', function() {
+        loadGruposParaInscripcion(this.value);
+      });
+    }
+
+    function loadGruposParaInscripcion(materiaId) {
+      const grupoSelect = document.getElementById('inscripcionGrupo');
+      grupoSelect.innerHTML = '<option value="">Seleccionar grupo</option>';
+      
+      if (!materiaId) return;
+      
+      const materia = allMaterias.find(m => m.id === materiaId);
+      if (materia && materia.grupos) {
+        materia.grupos.forEach(grupo => {
+          grupoSelect.innerHTML += `<option value="${grupo}">${grupo}</option>`;
+        });
+      } else {
+        grupoSelect.innerHTML = '<option value="">No hay grupos definidos</option>';
+      }
     }
 
     async function loadMateriasSelectMasive() {
@@ -1339,10 +1643,19 @@
     document.getElementById('userForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
+      const selectedRole = document.getElementById('userRole').value;
+      
+      // Verificar permisos para crear el rol seleccionado
+      const permissions = rolePermissions[currentUserRole];
+      if (!permissions.canCreateRoles.includes(selectedRole)) {
+        showNotification('No tienes permisos para crear usuarios con este rol', 'error');
+        return;
+      }
+      
       const userData = {
-        nombre: document.getElementById('userName').value,
+        nombre: document.getElementById('userNameInput').value,
         email: document.getElementById('userEmail').value,
-        role: document.getElementById('userRole').value,
+        role: selectedRole,
         numeroControl: document.getElementById('userControl').value,
         status: document.getElementById('userStatus').value
       };
@@ -1355,7 +1668,7 @@
         } else {
           // Crear nuevo usuario
           const password = document.getElementById('userPassword').value;
-          const userCredential = await createUserWithEmailAndPassword(auth, userData.email, password);
+          const userCredential = await createUserWithEmailAndPassword(secondaryAuth, userData.email, password);
           await setDoc(doc(db, 'users', userCredential.user.uid), userData);
           showNotification('Usuario creado exitosamente', 'success');
         }
@@ -1374,12 +1687,16 @@
       const unidadesText = document.getElementById('materiaUnidades').value;
       const unidadesArray = unidadesText.split(',').map(u => u.trim());
       
+      const gruposText = document.getElementById('materiaGrupos').value;
+      const gruposArray = gruposText.split(',').map(g => g.trim());
+      
       const materiaData = {
         codigo: document.getElementById('materiaCodigo').value,
         nombre: document.getElementById('materiaNombre').value,
         creditos: parseInt(document.getElementById('materiaCreditos').value),
         semestre: parseInt(document.getElementById('materiaSemestre').value) || null,
         unidades: unidadesArray,
+        grupos: gruposArray,
         createdAt: new Date().toISOString()
       };
       
@@ -1407,18 +1724,26 @@
         docenteId: document.getElementById('asignacionDocente').value,
         materiaId: document.getElementById('asignacionMateria').value,
         grupo: document.getElementById('asignacionGrupo').value,
-        periodo: document.getElementById('asignacionPeriodo').value,
-        createdAt: new Date().toISOString()
+        periodo: document.getElementById('asignacionPeriodo').value
       };
       
       try {
-        await addDoc(collection(db, 'asignaciones'), asignacionData);
+        if (currentAsignacionId) {
+          // Actualizar asignación existente
+          await updateDoc(doc(db, 'asignaciones', currentAsignacionId), asignacionData);
+          showNotification('Asignación actualizada exitosamente', 'success');
+        } else {
+          // Crear nueva asignación
+          asignacionData.createdAt = new Date().toISOString();
+          await addDoc(collection(db, 'asignaciones'), asignacionData);
+          showNotification('Asignación creada exitosamente', 'success');
+        }
+        
         closeModal('asignacionModal');
         loadAsignaciones();
-        showNotification('Asignación creada exitosamente', 'success');
       } catch (error) {
-        console.error('Error creando asignación:', error);
-        showNotification('Error al crear asignación: ' + error.message, 'error');
+        console.error('Error guardando asignación:', error);
+        showNotification('Error al guardar asignación: ' + error.message, 'error');
       }
     });
 
@@ -1488,6 +1813,12 @@
 
     // Funciones de eliminación
     window.deleteUser = async function(userId) {
+      const user = allUsers.find(u => u.id === userId);
+      if (!user || !canDeleteUser(user)) {
+        showNotification('No tienes permisos para eliminar este usuario', 'error');
+        return;
+      }
+      
       if (confirm('¿Está seguro de eliminar este usuario?')) {
         try {
           await deleteDoc(doc(db, 'users', userId));
@@ -1550,9 +1881,6 @@
         notification.style.display = 'none';
       }, 3000);
     }
-
-    // Cargar usuarios al inicio
-    loadUsers();
   </script>
 </body>
 </html>

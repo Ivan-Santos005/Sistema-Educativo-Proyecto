@@ -51,10 +51,12 @@
     }
 
     .container {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 0 20px;
-    }
+  max-width: 1200px;
+  margin: 20px auto;
+  padding-top: 60px;   /* espacio debajo del header */
+  padding-left: 20px;  /* padding izquierdo */
+  padding-right: 20px; /* padding derecho */
+}
 
     /* Vista de Materias */
     .materias-view {
@@ -385,8 +387,54 @@
   </style>
 </head>
 <body>
+  <!--<header class="header">
+    <div class="hamburger-menu">
+      <link rel="stylesheet" href="css/menu.css">
+        <button class="hamburger-btn">
+            <div class="hamburger-icon">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </div>
+            <span class="menu-text">Menú</span>
+        </button>
+        
+        <nav class="dropdown-menu">
+            <ul>
+                <li><a href="index.html"><span class="menu-icon">🏠</span><span class="menu-text">Inicio</span></a></li>
+                <li><a href="docente-dashboard.html"><span class="menu-icon">👨‍🏫</span><span class="menu-text">Dashboard Docente</span></a></li>
+                <li><a href="estudiante-dashboard.html"><span class="menu-icon">👨‍🎓</span><span class="menu-text">Dashboard Estudiante</span></a></li>
+                <li><a href="calificaciones.html"><span class="menu-icon">📊</span><span class="menu-text">Calificaciones</span></a></li>
+                <li><a href="registro.html"><span class="menu-icon">📝</span><span class="menu-text">Registro</span></a></li>
+                <li><a href="#" onclick="cerrarSesion()"><span class="menu-icon">🚪</span><span class="menu-text">Cerrar Sesión</span></a></li>
+            </ul>
+        </nav>
+    </div>
+</header>-->
   <div class="header">
     <h1>🎓 Portal del Estudiante</h1>
+    <div class="hamburger-menu">
+      <link rel="stylesheet" href="css/menu.css">
+        <button class="hamburger-btn">
+            <div class="hamburger-icon">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </div>
+            <span class="menu-text">Menú</span>
+        </button>
+        
+        <nav class="dropdown-menu">
+            <ul>
+                <li><a href="index.html"><span class="menu-icon">🏠</span><span class="menu-text">Inicio</span></a></li>
+                <li><a href="docente-dashboard.html"><span class="menu-icon">👨‍🏫</span><span class="menu-text">Dashboard Docente</span></a></li>
+                <li><a href="estudiante-dashboard.html"><span class="menu-icon">👨‍🎓</span><span class="menu-text">Dashboard Estudiante</span></a></li>
+                <li><a href="calificaciones.html"><span class="menu-icon">📊</span><span class="menu-text">Calificaciones</span></a></li>
+                <li><a href="registro.html"><span class="menu-icon">📝</span><span class="menu-text">Registro</span></a></li>
+                <li><a href="#" onclick="cerrarSesion()"><span class="menu-icon">🚪</span><span class="menu-text">Cerrar Sesión</span></a></li>
+            </ul>
+        </nav>
+    </div>
     <div class="header-info">
       <button class="back-btn" id="backBtn" onclick="goBack()">← Regresar</button>
       <span id="studentName">Cargando...</span>
